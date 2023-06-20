@@ -44,6 +44,20 @@ func (i *Interpreter) VisitThisExpr(expr *ThisExpr) (any, error) {
 }
 
 func (i *Interpreter) VisitUnaryExpr(expr *UnaryExpr) (any, error) {
+	r, err := i.Eval(expr.Right)
+	if err != nil {
+		return nil, err
+	}
+	switch expr.Operator.Type {
+	case Minus:
+		v, ok := r.(float32)
+		if !ok {
+			return nil, err
+		}
+		return v, nil
+	case Bang:
+		return !truthy(r), nil
+	}
 	return nil, nil
 }
 
@@ -53,4 +67,14 @@ func (i *Interpreter) VisitVarExpr(expr *VarExpr) (any, error) {
 
 func (i *Interpreter) Eval(e Expr) (any, error) {
 	return e.Accept(i)
+}
+
+func truthy(v any) bool {
+	if v == nil {
+		return false
+	}
+	if b, ok := v.(bool); !ok {
+		return b
+	}
+	return true
 }
