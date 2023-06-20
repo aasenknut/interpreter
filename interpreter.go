@@ -8,6 +8,22 @@ func (i *Interpreter) VisitAssignExpr(expr *AssignExpr) (any, error) {
 }
 
 func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
+	l, err := i.Eval(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+	r, err := i.Eval(expr.Right)
+	if err != nil {
+		return nil, err
+	}
+	switch expr.Operator.Type {
+	case Minus:
+		return l.(float32) - r.(float32), nil
+	case Slash:
+		return l.(float32) / r.(float32), nil
+	case Star:
+		return l.(float32) * r.(float32), nil
+	}
 	return nil, nil
 }
 
@@ -69,6 +85,7 @@ func (i *Interpreter) Eval(e Expr) (any, error) {
 	return e.Accept(i)
 }
 
+// truthy is true for everything but false and nil.
 func truthy(v any) bool {
 	if v == nil {
 		return false
