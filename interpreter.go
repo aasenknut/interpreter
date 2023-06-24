@@ -19,10 +19,26 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 	switch expr.Operator.Type {
 	case Minus:
 		return l.(float32) - r.(float32), nil
+	case Plus:
+		if _, ok := l.(float32); ok {
+			if _, ok := r.(float32); ok {
+				return l.(float32) + r.(float32), nil
+			}
+		}
+		if _, ok := l.(string); ok {
+			if _, ok := r.(string); ok {
+				return l.(string) + r.(string), nil
+			}
+		}
 	case Slash:
 		return l.(float32) / r.(float32), nil
 	case Star:
 		return l.(float32) * r.(float32), nil
+	case Greater:
+		return
+	case GreaterEqual:
+	case Less:
+	case LessEqual:
 	}
 	return nil, nil
 }
