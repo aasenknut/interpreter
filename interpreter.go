@@ -18,11 +18,11 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 	}
 	switch expr.Operator.Type {
 	case Minus:
-		return l.(float32) - r.(float32), nil
+		return l.(float64) - r.(float64), nil
 	case Plus:
-		if _, ok := l.(float32); ok {
-			if _, ok := r.(float32); ok {
-				return l.(float32) + r.(float32), nil
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf + rf, nil
 			}
 		}
 		if _, ok := l.(string); ok {
@@ -31,9 +31,9 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 			}
 		}
 	case Slash:
-		return l.(float32) / r.(float32), nil
+		return l.(float64) / r.(float64), nil
 	case Star:
-		return l.(float32) * r.(float32), nil
+		return l.(float64) * r.(float64), nil
 	case Greater:
 		return
 	case GreaterEqual:
@@ -82,7 +82,7 @@ func (i *Interpreter) VisitUnaryExpr(expr *UnaryExpr) (any, error) {
 	}
 	switch expr.Operator.Type {
 	case Minus:
-		v, ok := r.(float32)
+		v, ok := r.(float64)
 		if !ok {
 			return nil, err
 		}
@@ -110,4 +110,16 @@ func truthy(v any) bool {
 		return b
 	}
 	return true
+}
+
+func retFloat(v any) (float64, bool) {
+	switch j := v.(type) {
+	case int:
+		return float64(j), true
+	case float32:
+		return float64(j), true
+	case float64:
+		return j, true
+	}
+	return 0, false
 }
