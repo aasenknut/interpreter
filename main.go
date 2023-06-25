@@ -56,6 +56,9 @@ func main() {
 	//printAst(exampleExpr())
 	expr := parse(lex.Tokens)
 	printAst(expr)
+	interp := Interpreter{}
+	interp.interpret(expr)
+	fmt.Println("\n\n==[DONE]==")
 }
 
 func openCLI(reader io.Reader, writer io.Writer) error {

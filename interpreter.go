@@ -1,6 +1,17 @@
 package main
 
+import "fmt"
+
 type Interpreter struct {
+}
+
+func (i *Interpreter) interpret(e Expr) error {
+	v, err := i.Eval(e)
+	if err != nil {
+		return fmt.Errorf("interpreter evaluating: %v", err)
+	}
+	fmt.Println(v)
+	return nil
 }
 
 func (i *Interpreter) VisitAssignExpr(expr *AssignExpr) (any, error) {
@@ -18,7 +29,11 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 	}
 	switch expr.Operator.Type {
 	case Minus:
-		return l.(float64) - r.(float64), nil
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf - rf, nil
+			}
+		}
 	case Plus:
 		if lf, ok := retFloat(l); ok {
 			if rf, ok := retFloat(r); ok {
@@ -31,14 +46,46 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 			}
 		}
 	case Slash:
-		return l.(float64) / r.(float64), nil
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf / rf, nil
+			}
+		}
 	case Star:
-		return l.(float64) * r.(float64), nil
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf * rf, nil
+			}
+		}
 	case Greater:
-		return
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf > rf, nil
+			}
+		}
 	case GreaterEqual:
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf >= rf, nil
+			}
+		}
 	case Less:
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf < rf, nil
+			}
+		}
 	case LessEqual:
+		if lf, ok := retFloat(l); ok {
+			if rf, ok := retFloat(r); ok {
+				return lf <= rf, nil
+			}
+		}
+	case BangEqual:
+		eq, err := equal(l, r)
+		return !eq, err
+	case EqualEqual:
+		return equal(l, r)
 	}
 	return nil, nil
 }
@@ -122,4 +169,28 @@ func retFloat(v any) (float64, bool) {
 		return j, true
 	}
 	return 0, false
+}
+
+func equal(j, k any) (bool, error) {
+	if j == nil && k == nil {
+		return true, nil
+	}
+
+	switch j.(type) {
+	case int:
+		if jf, ok := retFloat(j); ok {
+			if kf, ok := retFloat(k); ok {
+				return jf == kf, nil
+			}
+		}
+	case float64:
+		if kf, ok := retFloat(k); ok {
+			return j == kf, nil
+		}
+	case string:
+		if s, ok := k.(string); ok {
+			return j == s, nil
+		}
+	}
+	return false, nil
 }
