@@ -57,7 +57,8 @@ func main() {
 	expr := parse(lex.Tokens)
 	printAst(expr)
 	interp := Interpreter{}
-	interp.interpret(expr)
+	ret, _ := interp.interpret(expr)
+	fmt.Printf("Evaultes to: %+v", ret)
 	fmt.Println("\n\n==[DONE]==")
 }
 

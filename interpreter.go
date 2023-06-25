@@ -1,17 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Interpreter struct {
 }
 
-func (i *Interpreter) interpret(e Expr) error {
+func (i *Interpreter) interpret(e Expr) (any, error) {
 	v, err := i.Eval(e)
 	if err != nil {
-		return fmt.Errorf("interpreter evaluating: %v", err)
+		return nil, fmt.Errorf("interpreter evaluating: %v", err)
 	}
-	fmt.Println(v)
-	return nil
+	return v, nil
 }
 
 func (i *Interpreter) VisitAssignExpr(expr *AssignExpr) (any, error) {
@@ -167,8 +169,22 @@ func retFloat(v any) (float64, bool) {
 		return float64(j), true
 	case float64:
 		return j, true
+	case string:
+		return strToFloat(v)
 	}
 	return 0, false
+}
+
+func strToFloat(v any) (float64, bool) {
+	s, ok := v.(string)
+	if !ok {
+		return 0, false
+	}
+	f, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0, false
+	}
+	return f, true
 }
 
 func equal(j, k any) (bool, error) {
