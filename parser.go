@@ -25,12 +25,47 @@ func NewParser(tokens []Token) *Parser {
 	return &Parser{tokens: tokens}
 }
 
-func (p *Parser) Parse() (Expr, error) {
-	expr, err := p.expression()
-	if err != nil {
-		return nil, fmt.Errorf("parser: %v", err)
+func (p *Parser) Parse() ([]Stmt, error) {
+	stmts := make([]Stmt, 0)
+	for !p.end() {
+		s, err := p.stmt()
+		if err != nil {
+			return nil, fmt.Errorf("stmt: %v", err)
+		}
+		stmts = append(stmts, s)
 	}
-	return expr, nil
+	return stmts, nil
+}
+
+func (p *Parser) stmt() (Stmt, error) {
+	if p.match(Print) {
+		return p.printStmt()
+	}
+	return p.exprStmt()
+}
+
+func (p *Parser) printStmt() (Stmt, error) {
+	val, err := p.expression()
+	if err != nil {
+		return nil, fmt.Errorf("print statement - expression: %v", err)
+	}
+	if p.tokens[p.curr].Type != Semicolon {
+		return nil, fmt.Errorf("parse print - expected semicolon after print: %v", err)
+	}
+	p.curr++
+	return &PrintStmt{val}, nil
+}
+
+func (p *Parser) exprStmt() (Stmt, error) {
+	e, err := p.expression()
+	if err != nil {
+		return nil, fmt.Errorf("expr stmt: %v", err)
+	}
+	if p.tokens[p.curr].Type != Semicolon {
+		return nil, fmt.Errorf("expr stmt - expected semicolon after expr: %v", err)
+	}
+	p.curr++
+	return &ExprStmt{e}, nil
 }
 
 func (p *Parser) expression() (Expr, error) {

@@ -53,12 +53,12 @@ func main() {
 		fmt.Println(t.Lexeme)
 	}
 
-	//printAst(exampleExpr())
-	expr := parse(lex.Tokens)
-	printAst(expr)
+	printAst(exampleExpr())
+	stmts := parse(lex.Tokens)
 	interp := Interpreter{}
-	ret, _ := interp.interpret(expr)
-	fmt.Printf("Evaultes to: %+v", ret)
+	if err := interp.interpret(stmts); err != nil {
+		fmt.Printf("err - interpreter: %v", err)
+	}
 	fmt.Println("\n\n==[DONE]==")
 }
 
@@ -110,11 +110,11 @@ func exampleExpr() Expr {
 	}
 }
 
-func parse(t []Token) Expr {
+func parse(t []Token) []Stmt {
 	p := NewParser(t)
-	e, err := p.Parse()
+	s, err := p.Parse()
 	if err != nil {
 		fmt.Println("\n[ERROR] parse: %v", err)
 	}
-	return e
+	return s
 }

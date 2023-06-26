@@ -5,18 +5,18 @@ type Expr interface {
 }
 
 type ExprVisitor interface {
-	VisitAssignExpr(expr *AssignExpr) (any, error)
-	VisitBinaryExpr(expr *BinaryExpr) (any, error)
-	VisitCallExpr(expr *CallExpr) (any, error)
-	VisitGetExpr(expr *GetExpr) (any, error)
-	VisitGroupingExpr(expr *GroupingExpr) (any, error)
-	VisitLiteralExpr(expr *LiteralExpr) (any, error)
-	VisitLogicalExpr(expr *LogicalExpr) (any, error)
-	VisitSetExpr(expr *SetExpr) (any, error)
-	VisitSuperExpr(expr *SuperExpr) (any, error)
-	VisitThisExpr(expr *ThisExpr) (any, error)
-	VisitUnaryExpr(expr *UnaryExpr) (any, error)
-	VisitVarExpr(expr *VarExpr) (any, error)
+	visitAssignExpr(expr *AssignExpr) (any, error)
+	visitBinaryExpr(expr *BinaryExpr) (any, error)
+	visitCallExpr(expr *CallExpr) (any, error)
+	visitGetExpr(expr *GetExpr) (any, error)
+	visitGroupingExpr(expr *GroupingExpr) (any, error)
+	visitLiteralExpr(expr *LiteralExpr) (any, error)
+	visitLogicalExpr(expr *LogicalExpr) (any, error)
+	visitSetExpr(expr *SetExpr) (any, error)
+	visitSuperExpr(expr *SuperExpr) (any, error)
+	visitThisExpr(expr *ThisExpr) (any, error)
+	visitUnaryExpr(expr *UnaryExpr) (any, error)
+	visitVarExpr(expr *VarExpr) (any, error)
 }
 
 type AssignExpr struct {
@@ -25,7 +25,7 @@ type AssignExpr struct {
 }
 
 func (a *AssignExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitAssignExpr(a)
+	return v.visitAssignExpr(a)
 }
 
 type BinaryExpr struct {
@@ -35,7 +35,7 @@ type BinaryExpr struct {
 }
 
 func (a *BinaryExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitBinaryExpr(a)
+	return v.visitBinaryExpr(a)
 }
 
 type CallExpr struct {
@@ -45,7 +45,7 @@ type CallExpr struct {
 }
 
 func (a *CallExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitCallExpr(a)
+	return v.visitCallExpr(a)
 }
 
 type GetExpr struct {
@@ -54,7 +54,7 @@ type GetExpr struct {
 }
 
 func (a *GetExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitGetExpr(a)
+	return v.visitGetExpr(a)
 }
 
 type GroupingExpr struct {
@@ -62,7 +62,7 @@ type GroupingExpr struct {
 }
 
 func (a *GroupingExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitGroupingExpr(a)
+	return v.visitGroupingExpr(a)
 }
 
 type LiteralExpr struct {
@@ -70,7 +70,7 @@ type LiteralExpr struct {
 }
 
 func (a *LiteralExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitLiteralExpr(a)
+	return v.visitLiteralExpr(a)
 }
 
 type LogicalExpr struct {
@@ -80,28 +80,28 @@ type LogicalExpr struct {
 }
 
 func (a *LogicalExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitLogicalExpr(a)
+	return v.visitLogicalExpr(a)
 }
 
 type SetExpr struct {
 }
 
 func (a *SetExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitSetExpr(a)
+	return v.visitSetExpr(a)
 }
 
 type SuperExpr struct {
 }
 
 func (a *SuperExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitSuperExpr(a)
+	return v.visitSuperExpr(a)
 }
 
 type ThisExpr struct {
 }
 
 func (a *ThisExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitThisExpr(a)
+	return v.visitThisExpr(a)
 }
 
 type UnaryExpr struct {
@@ -110,7 +110,7 @@ type UnaryExpr struct {
 }
 
 func (a *UnaryExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitUnaryExpr(a)
+	return v.visitUnaryExpr(a)
 }
 
 type VarExpr struct {
@@ -118,5 +118,5 @@ type VarExpr struct {
 }
 
 func (a *VarExpr) Accept(v ExprVisitor) (any, error) {
-	return v.VisitVarExpr(a)
+	return v.visitVarExpr(a)
 }

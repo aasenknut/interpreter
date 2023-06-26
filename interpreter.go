@@ -8,24 +8,26 @@ import (
 type Interpreter struct {
 }
 
-func (i *Interpreter) interpret(e Expr) (any, error) {
-	v, err := i.Eval(e)
-	if err != nil {
-		return nil, fmt.Errorf("interpreter evaluating: %v", err)
+func (i *Interpreter) interpret(stmts []Stmt) error {
+	for _, v := range stmts {
+		err := i.execute(v)
+		if err != nil {
+			return fmt.Errorf("interpreter execute: %v", err)
+		}
 	}
-	return v, nil
+	return nil
 }
 
-func (i *Interpreter) VisitAssignExpr(expr *AssignExpr) (any, error) {
+func (i *Interpreter) visitAssignExpr(expr *AssignExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
-	l, err := i.Eval(expr.Left)
+func (i *Interpreter) visitBinaryExpr(expr *BinaryExpr) (any, error) {
+	l, err := i.eval(expr.Left)
 	if err != nil {
 		return nil, err
 	}
-	r, err := i.Eval(expr.Right)
+	r, err := i.eval(expr.Right)
 	if err != nil {
 		return nil, err
 	}
@@ -92,40 +94,40 @@ func (i *Interpreter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitCallExpr(expr *CallExpr) (any, error) {
+func (i *Interpreter) visitCallExpr(expr *CallExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitGetExpr(expr *GetExpr) (any, error) {
+func (i *Interpreter) visitGetExpr(expr *GetExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitGroupingExpr(expr *GroupingExpr) (any, error) {
-	return i.Eval(expr.Expr)
+func (i *Interpreter) visitGroupingExpr(expr *GroupingExpr) (any, error) {
+	return i.eval(expr.Expr)
 }
 
-func (i *Interpreter) VisitLiteralExpr(expr *LiteralExpr) (any, error) {
+func (i *Interpreter) visitLiteralExpr(expr *LiteralExpr) (any, error) {
 	return expr.Value, nil
 }
 
-func (i *Interpreter) VisitLogicalExpr(expr *LogicalExpr) (any, error) {
+func (i *Interpreter) visitLogicalExpr(expr *LogicalExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitSetExpr(expr *SetExpr) (any, error) {
+func (i *Interpreter) visitSetExpr(expr *SetExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitSuperExpr(expr *SuperExpr) (any, error) {
+func (i *Interpreter) visitSuperExpr(expr *SuperExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitThisExpr(expr *ThisExpr) (any, error) {
+func (i *Interpreter) visitThisExpr(expr *ThisExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitUnaryExpr(expr *UnaryExpr) (any, error) {
-	r, err := i.Eval(expr.Right)
+func (i *Interpreter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
+	r, err := i.eval(expr.Right)
 	if err != nil {
 		return nil, err
 	}
@@ -142,12 +144,50 @@ func (i *Interpreter) VisitUnaryExpr(expr *UnaryExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) VisitVarExpr(expr *VarExpr) (any, error) {
+func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) Eval(e Expr) (any, error) {
+func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitExprStmt(stmt *ExprStmt) (any, error) {
+	return i.eval(stmt.Expr)
+}
+func (i *Interpreter) visitFnStmt(stmt *FnStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitIfStmt(stmt *IfStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitPrintStmt(stmt *PrintStmt) (any, error) {
+	v, err := i.eval(stmt.Expr)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(v)
+	return nil, nil
+}
+func (i *Interpreter) visitRetStmt(Return *RetStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitVarStmt(stmt *VarStmt) (any, error) {
+	return nil, nil
+}
+func (i *Interpreter) visitWhileStmt(stmt *WhileStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Interpreter) eval(e Expr) (any, error) {
 	return e.Accept(i)
+}
+
+func (i *Interpreter) execute(s Stmt) error {
+	_, err := s.Accept(i)
+	return err
 }
 
 // truthy is true for everything but false and nil.

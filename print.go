@@ -22,47 +22,47 @@ func (a *AstPrinter) Print(expr Expr) (string, error) {
 	}
 }
 
-func (a *AstPrinter) VisitAssignExpr(expr *AssignExpr) (any, error) {
+func (a *AstPrinter) visitAssignExpr(expr *AssignExpr) (any, error) {
 	return nil, nil
 
 }
-func (a *AstPrinter) VisitBinaryExpr(expr *BinaryExpr) (any, error) {
+func (a *AstPrinter) visitBinaryExpr(expr *BinaryExpr) (any, error) {
 	return a.parenthesise(expr.Operator.Lexeme, expr.Left, expr.Right)
 
 }
-func (a *AstPrinter) VisitCallExpr(expr *CallExpr) (any, error) {
+func (a *AstPrinter) visitCallExpr(expr *CallExpr) (any, error) {
 	return nil, nil
 
 }
-func (a *AstPrinter) VisitGetExpr(expr *GetExpr) (any, error) {
+func (a *AstPrinter) visitGetExpr(expr *GetExpr) (any, error) {
 	return nil, nil
 
 }
-func (a *AstPrinter) VisitGroupingExpr(expr *GroupingExpr) (any, error) {
+func (a *AstPrinter) visitGroupingExpr(expr *GroupingExpr) (any, error) {
 	return a.parenthesise("group", expr.Expr)
 }
 
-func (a *AstPrinter) VisitLiteralExpr(expr *LiteralExpr) (any, error) {
+func (a *AstPrinter) visitLiteralExpr(expr *LiteralExpr) (any, error) {
 	return expr.Value, nil
 }
-func (a *AstPrinter) VisitLogicalExpr(expr *LogicalExpr) (any, error) {
+func (a *AstPrinter) visitLogicalExpr(expr *LogicalExpr) (any, error) {
 	return nil, nil
 
 }
-func (a *AstPrinter) VisitSetExpr(expr *SetExpr) (any, error) {
+func (a *AstPrinter) visitSetExpr(expr *SetExpr) (any, error) {
 	return nil, nil
 }
-func (a *AstPrinter) VisitSuperExpr(expr *SuperExpr) (any, error) {
+func (a *AstPrinter) visitSuperExpr(expr *SuperExpr) (any, error) {
 	return nil, nil
 }
-func (a *AstPrinter) VisitThisExpr(expr *ThisExpr) (any, error) {
+func (a *AstPrinter) visitThisExpr(expr *ThisExpr) (any, error) {
 	return nil, nil
 }
-func (a *AstPrinter) VisitUnaryExpr(expr *UnaryExpr) (any, error) {
+func (a *AstPrinter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 	ret, err := a.parenthesise(expr.Operator.Lexeme, expr.Right)
 	return ret, err
 }
-func (a *AstPrinter) VisitVarExpr(expr *VarExpr) (any, error) {
+func (a *AstPrinter) visitVarExpr(expr *VarExpr) (any, error) {
 	return nil, nil
 }
 
