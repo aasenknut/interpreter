@@ -1,1 +1,3 @@
-123 + 4567 - 89;
+print "one";
+print true;
+print 2 + 1;

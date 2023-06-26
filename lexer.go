@@ -21,6 +21,11 @@ func (l *Lexer) Scan() error {
 	l.start = 0
 	for !l.end() {
 		l.start = l.current
+		// TEST
+		if l.current == 10 {
+			fmt.Println(string(l.Source[l.current]))
+		}
+		// TEST
 		err := l.readToken()
 		if err != nil {
 			return fmt.Errorf("read token: %v", err)
@@ -109,7 +114,7 @@ func (l *Lexer) readToken() error {
 		l.line++
 		l.current++
 	case '"':
-		// check for string
+		return l.str()
 	default: // If not numeric, then identifier.
 		if isNumeric(char) {
 			str, err := l.digit()
@@ -124,14 +129,51 @@ func (l *Lexer) readToken() error {
 			if err != nil {
 				return fmt.Errorf("identifier, line: %d, err: %v", l.line, err)
 			}
+			if t, ok := Keywords[str]; ok {
+				l.addToken(t, str, "")
+				break
+			}
 			l.addToken(Identifier, str, "")
-
 		} else {
 			return fmt.Errorf("unexpected character, line %d", l.line)
 		}
 	}
 	return nil
 }
+
+func (l *Lexer) str() error {
+	for !l.lookAheadFor('"') && !l.end() {
+		if l.lookAheadFor('\n') {
+			l.line++
+		}
+		l.current++
+	}
+	if l.end() {
+		return fmt.Errorf("unterminated string")
+	}
+	l.current += 2
+	l.addToken(String, l.Source[l.start+1:l.current-1], "")
+	return nil
+}
+
+//  private void string() {
+//    while (peek() != '"' && !isAtEnd()) {
+//      if (peek() == '\n') line++;
+//      advance();
+//    }
+//
+//    if (isAtEnd()) {
+//      Lox.error(line, "Unterminated string.");
+//      return;
+//    }
+//
+//    // The closing ".
+//    advance();
+//
+//    // Trim the surrounding quotes.
+//    String value = source.substring(start + 1, current - 1);
+//    addToken(STRING, value);
+//  }
 
 func (l *Lexer) digit() (string, error) {
 	for isNumeric(l.Source[l.current]) {

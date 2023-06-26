@@ -37,8 +37,7 @@ func main() {
 			log.Fatal("read file: %v", err)
 		}
 	}
-	fmt.Println(string(fContent))
-	fmt.Println("scanning...")
+	fmt.Println("\nFile content:\n" + string(fContent))
 	lex := Lexer{
 		Source:  string(fContent),
 		Tokens:  []Token{},
@@ -46,16 +45,20 @@ func main() {
 		start:   0,
 		current: 0,
 	}
+	fmt.Println("scanning...")
 	if err = lex.Scan(); err != nil {
 		log.Fatal("lexer scan: %v", err)
 	}
+	fmt.Println("scanning DONE")
 	for _, t := range lex.Tokens {
 		fmt.Println(t.Lexeme)
 	}
 
 	printAst(exampleExpr())
+	fmt.Println("parsing...")
 	stmts := parse(lex.Tokens)
 	interp := Interpreter{}
+	fmt.Println("interpreting...")
 	if err := interp.interpret(stmts); err != nil {
 		fmt.Printf("err - interpreter: %v", err)
 	}
