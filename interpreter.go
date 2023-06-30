@@ -6,6 +6,7 @@ import (
 )
 
 type Interpreter struct {
+	env Env
 }
 
 func (i *Interpreter) interpret(stmts []Stmt) error {
@@ -19,7 +20,12 @@ func (i *Interpreter) interpret(stmts []Stmt) error {
 }
 
 func (i *Interpreter) visitAssignExpr(expr *AssignExpr) (any, error) {
-	return nil, nil
+	val, err := i.eval(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	i.env.assign(expr.Name, expr.Value)
+	return val, nil
 }
 
 func (i *Interpreter) visitBinaryExpr(expr *BinaryExpr) (any, error) {
@@ -145,12 +151,14 @@ func (i *Interpreter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 }
 
 func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
-	return nil, nil
+	return i.env.get(expr.Name.Lexeme)
 }
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
+	i.executeBlock(stmt.Stmts, i.env)
 	return nil, nil
 }
+
 func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
 	return nil, nil
 }
@@ -174,8 +182,18 @@ func (i *Interpreter) visitPrintStmt(stmt *PrintStmt) (any, error) {
 func (i *Interpreter) visitRetStmt(Return *RetStmt) (any, error) {
 	return nil, nil
 }
-func (i *Interpreter) visitVarStmt(stmt *VarStmt) (any, error) {
-	return nil, nil
+func (i *Interpreter) visitVarStmt(stmt *VarStmt) error {
+	var v any
+	var err error
+	if stmt.Init != nil {
+		v, err = i.eval(stmt.Init)
+		if err != nil {
+			return err
+		}
+
+	}
+	i.env.define(stmt.Name.Lexeme, v)
+	return nil
 }
 func (i *Interpreter) visitWhileStmt(stmt *WhileStmt) (any, error) {
 	return nil, nil
@@ -249,4 +267,13 @@ func equal(j, k any) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func (i *Interpreter) executeBlock(stmts []Stmt, e Env) {
+	prev := i.env
+	i.env = e
+	for _, s := range stmts {
+		i.execute(s)
+	}
+	i.env = prev
 }

@@ -12,7 +12,7 @@ type StmtVisitor interface {
 	visitIfStmt(stmt *IfStmt) (any, error)
 	visitPrintStmt(stmt *PrintStmt) (any, error)
 	visitRetStmt(Return *RetStmt) (any, error)
-	visitVarStmt(stmt *VarStmt) (any, error)
+	visitVarStmt(stmt *VarStmt) error
 	visitWhileStmt(stmt *WhileStmt) (any, error)
 }
 
@@ -88,7 +88,7 @@ type VarStmt struct {
 }
 
 func (vs *VarStmt) Accept(v StmtVisitor) (any, error) {
-	return v.visitVarStmt(vs)
+	return v.visitVarStmt(vs), nil
 
 }
 
