@@ -6,6 +6,7 @@ import (
 )
 
 type Interpreter struct {
+	env Env
 }
 
 func (i *Interpreter) interpret(stmts []Stmt) error {
@@ -145,7 +146,7 @@ func (i *Interpreter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 }
 
 func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
-	return nil, nil
+	return i.env.get(expr.Name.Lexeme)
 }
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
@@ -174,8 +175,18 @@ func (i *Interpreter) visitPrintStmt(stmt *PrintStmt) (any, error) {
 func (i *Interpreter) visitRetStmt(Return *RetStmt) (any, error) {
 	return nil, nil
 }
-func (i *Interpreter) visitVarStmt(stmt *VarStmt) (any, error) {
-	return nil, nil
+func (i *Interpreter) visitVarStmt(stmt *VarStmt) error {
+	var v any
+	var err error
+	if stmt.Init != nil {
+		v, err = i.eval(stmt.Init)
+		if err != nil {
+			return err
+		}
+
+	}
+	i.env.put(stmt.Name.Lexeme, v)
+	return nil
 }
 func (i *Interpreter) visitWhileStmt(stmt *WhileStmt) (any, error) {
 	return nil, nil

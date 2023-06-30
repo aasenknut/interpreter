@@ -28,13 +28,48 @@ func NewParser(tokens []Token) *Parser {
 func (p *Parser) Parse() ([]Stmt, error) {
 	stmts := make([]Stmt, 0)
 	for !p.end() {
-		s, err := p.stmt()
+		s, err := p.declaration()
 		if err != nil {
 			return nil, fmt.Errorf("stmt: %v", err)
 		}
 		stmts = append(stmts, s)
 	}
 	return stmts, nil
+}
+
+func (p *Parser) declaration() (Stmt, error) {
+
+	if p.match(Var) {
+		p.curr++
+		return p.varDeclaration()
+	}
+	s, err := p.stmt()
+	if err != nil {
+		return nil, fmt.Errorf("stmt declaration: %v", err)
+	}
+	return s, nil
+}
+
+func (p *Parser) varDeclaration() (Stmt, error) {
+	var name Token
+	if p.match(Identifier) {
+		p.curr++
+		name = p.tokens[p.curr-1]
+	}
+	var init Expr
+	var err error
+	if p.match(Equal) {
+		p.curr++
+		init, err = p.expression()
+		if err != nil {
+			return nil, fmt.Errorf("var declaration: %v", err)
+		}
+	}
+	p.curr++
+	if p.tokens[p.curr].Type != Semicolon {
+		return nil, fmt.Errorf("expected semicolon at end of var dec, got: %v", p.tokens[p.curr])
+	}
+	return &VarStmt{Name: name, Init: init}, nil
 }
 
 func (p *Parser) stmt() (Stmt, error) {
@@ -170,6 +205,9 @@ func (p *Parser) primary() (Expr, error) {
 	case p.match(Number, String):
 		p.step()
 		return &LiteralExpr{Value: p.tokens[p.curr-1].Literal}, nil
+	case p.match(Identifier):
+		p.step()
+		return &VarExpr{p.tokens[p.curr-1]}, nil
 	case p.match(LParen):
 		p.step()
 		e, err := p.expression()
