@@ -20,7 +20,12 @@ func (i *Interpreter) interpret(stmts []Stmt) error {
 }
 
 func (i *Interpreter) visitAssignExpr(expr *AssignExpr) (any, error) {
-	return nil, nil
+	val, err := i.eval(expr.Value)
+	if err != nil {
+		return nil, err
+	}
+	i.env.assign(expr.Name, expr.Value)
+	return val, nil
 }
 
 func (i *Interpreter) visitBinaryExpr(expr *BinaryExpr) (any, error) {

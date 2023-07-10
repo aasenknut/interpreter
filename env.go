@@ -21,17 +21,17 @@ func (e *Env) get(name string) (any, error) {
 	return nil, fmt.Errorf("undefined for name: %s", name)
 }
 
-func (e *Env) assign(t Token, val any) error {
-	if _, ok := e.vals.Load(t.Lexeme); ok {
-		e.vals.Store(t.Lexeme, val)
+func (e *Env) assign(name, val any) error {
+	if _, ok := e.vals.Load(name); ok {
+		e.vals.Store(name, val)
 		return nil
 	}
 
 	if e.enclosing != nil {
-		return e.enclosing.assign(t, val)
+		return e.enclosing.assign(name, val)
 	}
 
-	return fmt.Errorf("unefineable variable: %s", t.Lexeme)
+	return fmt.Errorf("unefineable variable: %s", name)
 }
 
 func (e *Env) define(key string, val any) {

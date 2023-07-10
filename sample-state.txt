@@ -1,4 +1,7 @@
+var a = "outside a";
+print a;
 {
-  var a = "outer a";
+  var a = "inside a";
+  print a;
 }
 print a;

@@ -73,6 +73,7 @@ func (p *Parser) varDeclaration() (Stmt, error) {
 
 func (p *Parser) stmt() (Stmt, error) {
 	if p.match(Print) {
+		p.step()
 		return p.printStmt()
 	}
 	if p.tokens[p.curr].Type == LBrace {
@@ -224,7 +225,7 @@ func (p *Parser) primary() (Expr, error) {
 		return &LiteralExpr{Value: nil}, nil
 	case p.match(Number, String):
 		p.step()
-		return &LiteralExpr{Value: p.tokens[p.curr-1].Literal}, nil
+		return &LiteralExpr{Value: p.tokens[p.curr-1].Lexeme}, nil
 	case p.match(Identifier):
 		p.step()
 		return &VarExpr{p.tokens[p.curr-1]}, nil
