@@ -20,7 +20,7 @@ var fname = flag.String(
 func main() {
 	fmt.Println("starting...")
 
-	foo := "./sample-small.txt"
+	foo := "./sample-state.txt"
 	fname = &foo
 
 	var fContent []byte
@@ -50,11 +50,11 @@ func main() {
 		log.Fatal("lexer scan: %v", err)
 	}
 	fmt.Println("scanning DONE")
-	for _, t := range lex.Tokens {
-		fmt.Println(t.Lexeme)
-	}
+	//for _, t := range lex.Tokens {
+	//	fmt.Println(t.Lexeme)
+	//}
 
-	printAst(exampleExpr())
+	//printAst(exampleExpr())
 	fmt.Println("parsing...")
 	stmts := parse(lex.Tokens)
 	interp := Interpreter{}

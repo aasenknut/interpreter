@@ -38,7 +38,6 @@ func (p *Parser) Parse() ([]Stmt, error) {
 }
 
 func (p *Parser) declaration() (Stmt, error) {
-
 	if p.match(Var) {
 		p.curr++
 		return p.varDeclaration()
@@ -65,10 +64,10 @@ func (p *Parser) varDeclaration() (Stmt, error) {
 			return nil, fmt.Errorf("var declaration: %v", err)
 		}
 	}
-	p.curr++
 	if p.tokens[p.curr].Type != Semicolon {
 		return nil, fmt.Errorf("expected semicolon at end of var dec, got: %v", p.tokens[p.curr])
 	}
+	p.curr++
 	return &VarStmt{Name: name, Init: init}, nil
 }
 
@@ -76,7 +75,28 @@ func (p *Parser) stmt() (Stmt, error) {
 	if p.match(Print) {
 		return p.printStmt()
 	}
+	if p.tokens[p.curr].Type == LBrace {
+		p.step()
+		b, err := p.block()
+		if err != nil {
+			return nil, err
+		}
+		return &BlockStmt{Stmts: b}, nil
+	}
 	return p.exprStmt()
+}
+
+func (p *Parser) block() ([]Stmt, error) {
+	stmts := make([]Stmt, 0)
+	for p.tokens[p.curr].Type != RBrace && !p.end() {
+		s, err := p.declaration()
+		if err != nil {
+			return nil, fmt.Errorf("err declaring: %v", err)
+		}
+		stmts = append(stmts, s)
+	}
+	p.step()
+	return stmts, nil
 }
 
 func (p *Parser) printStmt() (Stmt, error) {

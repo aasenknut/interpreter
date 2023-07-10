@@ -1,19 +1,59 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 type Env struct {
-	vals map[string]any
+	vals      sync.Map
+	enclosing *Env
 }
 
-func (e *Env) get(key string) (any, error) {
-	v, ok := e.vals[key]
+func (e *Env) get(name string) (any, error) {
+	if v, ok := e.vals.Load(name); ok {
+		return v, nil
+	}
+
+	if e.enclosing != nil {
+		return e.enclosing.get(name)
+	}
+	return nil, fmt.Errorf("undefined for name: %s", name)
+}
+
+func (e *Env) assign(t Token, val any) error {
+	if _, ok := e.vals.Load(t.Lexeme); ok {
+		e.vals.Store(t.Lexeme, val)
+		return nil
+	}
+
+	if e.enclosing != nil {
+		return e.enclosing.assign(t, val)
+	}
+
+	return fmt.Errorf("unefineable variable: %s", t.Lexeme)
+}
+
+func (e *Env) define(key string, val any) {
+	e.vals.Store(key, val)
+}
+
+func (e *Env) ancestor(dist int) *Env {
+	environ := e
+	for j := 0; j < dist; j++ {
+		environ = environ.enclosing
+	}
+	return environ
+}
+
+func (e *Env) getAt(dist int, name string) (any, error) {
+	v, ok := e.ancestor(dist).vals.Load(name)
 	if !ok {
-		return nil, fmt.Errorf("trying to get undefined var")
+		return nil, fmt.Errorf("can't get, at: %s, %d", name, dist)
 	}
 	return v, nil
 }
 
-func (e *Env) put(key string, val any) {
-	e.vals[key] = val
+func (e *Env) assignAt(dist int, t Token, val any) {
+	e.ancestor(dist).vals.Store(t.Lexeme, val)
 }

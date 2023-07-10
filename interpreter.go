@@ -150,8 +150,10 @@ func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
 }
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
+	i.executeBlock(stmt.Stmts, i.env)
 	return nil, nil
 }
+
 func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
 	return nil, nil
 }
@@ -185,7 +187,7 @@ func (i *Interpreter) visitVarStmt(stmt *VarStmt) error {
 		}
 
 	}
-	i.env.put(stmt.Name.Lexeme, v)
+	i.env.define(stmt.Name.Lexeme, v)
 	return nil
 }
 func (i *Interpreter) visitWhileStmt(stmt *WhileStmt) (any, error) {
@@ -260,4 +262,13 @@ func equal(j, k any) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func (i *Interpreter) executeBlock(stmts []Stmt, e Env) {
+	prev := i.env
+	i.env = e
+	for _, s := range stmts {
+		i.execute(s)
+	}
+	i.env = prev
 }
