@@ -160,6 +160,7 @@ func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
 	e := NewEnv()
+	e.enclosing = i.env
 	i.executeBlock(stmt.Stmts, e)
 	return nil, nil
 }
