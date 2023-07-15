@@ -6,7 +6,11 @@ import (
 )
 
 type Interpreter struct {
-	env Env
+	env *Env
+}
+
+func NewInterpreter() *Interpreter {
+	return &Interpreter{env: NewEnv()}
 }
 
 func (i *Interpreter) interpret(stmts []Stmt) error {
@@ -155,7 +159,8 @@ func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
 }
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
-	i.executeBlock(stmt.Stmts, i.env)
+	e := NewEnv()
+	i.executeBlock(stmt.Stmts, e)
 	return nil, nil
 }
 
@@ -269,7 +274,7 @@ func equal(j, k any) (bool, error) {
 	return false, nil
 }
 
-func (i *Interpreter) executeBlock(stmts []Stmt, e Env) {
+func (i *Interpreter) executeBlock(stmts []Stmt, e *Env) {
 	prev := i.env
 	i.env = e
 	for _, s := range stmts {

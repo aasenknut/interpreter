@@ -57,7 +57,7 @@ func main() {
 	//printAst(exampleExpr())
 	fmt.Println("parsing...")
 	stmts := parse(lex.Tokens)
-	interp := Interpreter{}
+	interp := NewInterpreter()
 	fmt.Println("interpreting...")
 	if err := interp.interpret(stmts); err != nil {
 		fmt.Printf("err - interpreter: %v", err)
