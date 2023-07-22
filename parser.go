@@ -84,7 +84,39 @@ func (p *Parser) stmt() (Stmt, error) {
 		}
 		return &BlockStmt{Stmts: b}, nil
 	}
+	if p.match(If) {
+		return p.ifStmt()
+	}
 	return p.exprStmt()
+}
+
+func (p *Parser) ifStmt() (Stmt, error) {
+	if p.tokens[p.curr].Type != LParen {
+		return nil, fmt.Errorf("if statement: expected left paren")
+	}
+	p.step()
+	cond, err := p.expression()
+	if err != nil {
+		return nil, fmt.Errorf("expr from if stmt: %v", err)
+	}
+	p.step()
+	if p.tokens[p.curr].Type != LParen {
+		return nil, fmt.Errorf("if statement: expected left paren")
+	}
+	p.step()
+	thenBranch, err := p.stmt()
+	if err != nil {
+		return nil, fmt.Errorf("then branch if stmt: %v", err)
+	}
+	var elseBranch Stmt
+	elseBranch = nil
+	if p.match(Else) {
+		elseBranch, err = p.stmt()
+		if err != nil {
+			return nil, fmt.Errorf("else branch if stmt: %v", err)
+		}
+	}
+	return &IfStmt{Cond: cond, Then: thenBranch, Else: elseBranch}, nil
 }
 
 func (p *Parser) block() ([]Stmt, error) {
