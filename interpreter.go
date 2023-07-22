@@ -175,6 +175,15 @@ func (i *Interpreter) visitFnStmt(stmt *FnStmt) (any, error) {
 	return nil, nil
 }
 func (i *Interpreter) visitIfStmt(stmt *IfStmt) (any, error) {
+	ok, err := i.eval(stmt.Cond)
+	if err != nil {
+		return nil, fmt.Errorf("visit if stmt: %v", err)
+	}
+	if truthy(ok) {
+		return nil, i.execute(stmt.Then)
+	} else if stmt.Else != nil {
+		return nil, i.execute(stmt.Else)
+	}
 	return nil, nil
 }
 func (i *Interpreter) visitPrintStmt(stmt *PrintStmt) (any, error) {
