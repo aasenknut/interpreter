@@ -1,0 +1,9 @@
+var a = "before";
+print a;
+var a = "after";
+print a;
+
+var x = 1;
+print x;
+var x = 2;
+print x;

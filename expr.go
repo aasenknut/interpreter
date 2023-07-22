@@ -39,9 +39,9 @@ func (a *BinaryExpr) Accept(v ExprVisitor) (any, error) {
 }
 
 type CallExpr struct {
-	Callee    Expr
-	Paren     Token
-	Arguments []Expr
+	Callee Expr
+	Paren  Token
+	Args   []Expr
 }
 
 func (a *CallExpr) Accept(v ExprVisitor) (any, error) {
@@ -84,6 +84,9 @@ func (a *LogicalExpr) Accept(v ExprVisitor) (any, error) {
 }
 
 type SetExpr struct {
+	Object Expr
+	Name   string
+	Val    Expr
 }
 
 func (a *SetExpr) Accept(v ExprVisitor) (any, error) {
@@ -114,7 +117,7 @@ func (a *UnaryExpr) Accept(v ExprVisitor) (any, error) {
 }
 
 type VarExpr struct {
-	Name Token
+	Name string
 }
 
 func (a *VarExpr) Accept(v ExprVisitor) (any, error) {

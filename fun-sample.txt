@@ -1,0 +1,7 @@
+fun sayHi(first, last) {
+  print "Hi, " + first + " " + last + "!";
+  return 2;
+}
+
+var x = sayHi("Dear", "Reader");
+print x;
