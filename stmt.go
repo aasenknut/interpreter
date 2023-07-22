@@ -8,7 +8,7 @@ type StmtVisitor interface {
 	visitBlockStmt(stmt *BlockStmt) (any, error)
 	visitClassStmt(stmt *ClassStmt) (any, error)
 	visitExprStmt(stmt *ExprStmt) (any, error)
-	visitFnStmt(stmt *FnStmt) (any, error)
+	visitFunStmt(stmt *FunStmt) (any, error)
 	visitIfStmt(stmt *IfStmt) (any, error)
 	visitPrintStmt(stmt *PrintStmt) (any, error)
 	visitRetStmt(Return *RetStmt) (any, error)
@@ -43,14 +43,14 @@ func (e *ExprStmt) Accept(v StmtVisitor) (any, error) {
 
 }
 
-type FnStmt struct {
+type FunStmt struct {
 	Name   Token
 	Params []Token
 	Body   []Stmt
 }
 
-func (f *FnStmt) Accept(v StmtVisitor) (any, error) {
-	return v.visitFnStmt(f)
+func (f *FunStmt) Accept(v StmtVisitor) (any, error) {
+	return v.visitFunStmt(f)
 
 }
 

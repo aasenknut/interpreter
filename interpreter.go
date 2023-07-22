@@ -2,20 +2,23 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"reflect"
 	"strconv"
 )
 
 type Interpreter struct {
-	env *Env
+	env     *Env
+	globals *Env
 }
 
 func NewInterpreter() *Interpreter {
-	return &Interpreter{env: NewEnv()}
+	return &Interpreter{env: NewEnv(), globals: NewEnv()}
 }
 
 func (i *Interpreter) interpret(stmts []Stmt) error {
 	for _, v := range stmts {
-		err := i.execute(v)
+		_, err := i.execute(v)
 		if err != nil {
 			return fmt.Errorf("interpreter execute: %v", err)
 		}
@@ -28,7 +31,7 @@ func (i *Interpreter) visitAssignExpr(expr *AssignExpr) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	i.env.assign(expr.Name, expr.Value)
+	i.env.Assign(expr.Name, val)
 	return val, nil
 }
 
@@ -105,7 +108,27 @@ func (i *Interpreter) visitBinaryExpr(expr *BinaryExpr) (any, error) {
 }
 
 func (i *Interpreter) visitCallExpr(expr *CallExpr) (any, error) {
-	return nil, nil
+	callee, err := i.eval(expr.Callee)
+	if err != nil {
+		return nil, fmt.Errorf("visit callee, %v", err)
+	}
+
+	args := make([]any, 0)
+	for _, arg := range expr.Args {
+		a, err := i.eval(arg)
+		if err != nil {
+			return nil, fmt.Errorf("visit callee, %v", err)
+		}
+		args = append(args, a)
+	}
+
+	if fn, ok := callee.(Callable); ok {
+		if len(args) != fn.Arity() {
+			return nil, fmt.Errorf("wrong #args, expected: %d, got: %d", fn.Arity(), len(args))
+		}
+		return fn.Call(i, args), nil
+	}
+	return nil, fmt.Errorf("can not call: %v", reflect.TypeOf(callee))
 }
 
 func (i *Interpreter) visitGetExpr(expr *GetExpr) (any, error) {
@@ -121,7 +144,21 @@ func (i *Interpreter) visitLiteralExpr(expr *LiteralExpr) (any, error) {
 }
 
 func (i *Interpreter) visitLogicalExpr(expr *LogicalExpr) (any, error) {
-	return nil, nil
+	l, err := i.eval(expr.Left)
+	if err != nil {
+		return nil, fmt.Errorf("visit logical: %v", err)
+	}
+
+	if expr.Operator.Type == Or {
+		if truthy(l) {
+			return l, nil
+		}
+	} else {
+		if !truthy(l) {
+			return l, nil
+		}
+	}
+	return i.eval(expr.Right)
 }
 
 func (i *Interpreter) visitSetExpr(expr *SetExpr) (any, error) {
@@ -155,14 +192,14 @@ func (i *Interpreter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 }
 
 func (i *Interpreter) visitVarExpr(expr *VarExpr) (any, error) {
-	return i.env.get(expr.Name.Lexeme)
+	return i.env.Get(expr.Name)
 }
 
 func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
 	e := NewEnv()
-	e.enclosing = i.env
-	i.executeBlock(stmt.Stmts, e)
-	return nil, nil
+	e.enclosing = CopyFrom(i.env)
+	ret := i.executeBlock(stmt.Stmts, e)
+	return ret, nil
 }
 
 func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
@@ -171,7 +208,11 @@ func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
 func (i *Interpreter) visitExprStmt(stmt *ExprStmt) (any, error) {
 	return i.eval(stmt.Expr)
 }
-func (i *Interpreter) visitFnStmt(stmt *FnStmt) (any, error) {
+func (i *Interpreter) visitFunStmt(stmt *FunStmt) (any, error) {
+	fun := NewFunction()
+	fun.declaration = stmt
+	fun.closure = i.env
+	i.env.Define(stmt.Name.Lexeme, fun)
 	return nil, nil
 }
 func (i *Interpreter) visitIfStmt(stmt *IfStmt) (any, error) {
@@ -180,9 +221,9 @@ func (i *Interpreter) visitIfStmt(stmt *IfStmt) (any, error) {
 		return nil, fmt.Errorf("visit if stmt: %v", err)
 	}
 	if truthy(ok) {
-		return nil, i.execute(stmt.Then)
+		return i.execute(stmt.Then)
 	} else if stmt.Else != nil {
-		return nil, i.execute(stmt.Else)
+		return i.execute(stmt.Else)
 	}
 	return nil, nil
 }
@@ -191,10 +232,21 @@ func (i *Interpreter) visitPrintStmt(stmt *PrintStmt) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(v)
+	if l, ok := v.(*LiteralExpr); ok {
+		fmt.Println(l.Value)
+	} else {
+		fmt.Println(v)
+	}
 	return nil, nil
 }
-func (i *Interpreter) visitRetStmt(Return *RetStmt) (any, error) {
+func (i *Interpreter) visitRetStmt(stmt *RetStmt) (any, error) {
+	if stmt.Val != nil {
+		v, err := i.eval(stmt.Val)
+		if err != nil {
+			return nil, fmt.Errorf("ret: %v", err)
+		}
+		return v, nil
+	}
 	return nil, nil
 }
 func (i *Interpreter) visitVarStmt(stmt *VarStmt) error {
@@ -205,12 +257,22 @@ func (i *Interpreter) visitVarStmt(stmt *VarStmt) error {
 		if err != nil {
 			return err
 		}
-
 	}
-	i.env.define(stmt.Name.Lexeme, v)
+	i.env.Define(stmt.Name.Lexeme, v)
 	return nil
 }
 func (i *Interpreter) visitWhileStmt(stmt *WhileStmt) (any, error) {
+	val, err := i.eval(stmt.Cond)
+	if err != nil {
+		return nil, fmt.Errorf("visit whileStmt: %v", err)
+	}
+	for truthy(val) {
+		i.execute(stmt.Body)
+		val, err = i.eval(stmt.Cond)
+		if err != nil {
+			return nil, fmt.Errorf("visit whileStmt: %v", err)
+		}
+	}
 	return nil, nil
 }
 
@@ -218,9 +280,8 @@ func (i *Interpreter) eval(e Expr) (any, error) {
 	return e.Accept(i)
 }
 
-func (i *Interpreter) execute(s Stmt) error {
-	_, err := s.Accept(i)
-	return err
+func (i *Interpreter) execute(s Stmt) (any, error) {
+	return s.Accept(i)
 }
 
 // truthy is true for everything but false and nil.
@@ -228,8 +289,10 @@ func truthy(v any) bool {
 	if v == nil {
 		return false
 	}
-	if b, ok := v.(bool); !ok {
-		return b
+	if b, ok := v.(bool); ok {
+		if !b {
+			return b
+		}
 	}
 	return true
 }
@@ -284,11 +347,25 @@ func equal(j, k any) (bool, error) {
 	return false, nil
 }
 
-func (i *Interpreter) executeBlock(stmts []Stmt, e *Env) {
-	prev := i.env
-	i.env = e
+func (i *Interpreter) executeBlock(stmts []Stmt, e *Env) any {
+	prev := CopyFrom(i.env)
+	i.env = CopyFrom(e)
+	var ret any
+	var err error
 	for _, s := range stmts {
-		i.execute(s)
+		if retVal, ok := s.(*RetStmt); ok {
+			if v, ok := retVal.Val.(*VarExpr); ok {
+				ret, err = i.eval(v)
+				if err != nil {
+					log.Fatalf("can not get var expr %s: %v", v.Name, err)
+				}
+			} else {
+				ret = retVal.Val
+			}
+		} else {
+			i.execute(s)
+		}
 	}
-	i.env = prev
+	i.env = CopyFrom(prev)
+	return ret
 }

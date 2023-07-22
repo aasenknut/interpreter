@@ -6,6 +6,7 @@ var c = "global c";
   var b = "outer b";
   {
     var a = "inner a";
+    var b = b + "absolute inner B";
     print a;
     print b;
     print c;

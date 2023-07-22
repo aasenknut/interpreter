@@ -63,8 +63,6 @@ const (
 	True   // 35
 	Var    // 36
 	While  // 37
-
-	EOF // 38
 )
 
 var Keywords = map[string]TokenType{

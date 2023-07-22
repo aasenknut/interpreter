@@ -14,35 +14,35 @@ func NewEnv() *Env {
 	return &Env{vals: vals}
 }
 
-func (e *Env) get(name string) (any, error) {
+func (e *Env) Get(name string) (any, error) {
 	if v, ok := e.vals[name]; ok {
 		return v, nil
 	}
 
 	if e.enclosing != nil {
-		return e.enclosing.get(name)
+		return e.enclosing.Get(name)
 	}
 	return nil, fmt.Errorf("undefined for name: %s", name)
 }
 
-func (e *Env) assign(name string, val any) error {
+func (e *Env) Assign(name string, val any) error {
 	if _, ok := e.vals[name]; ok {
 		e.vals[name] = val
 		return nil
 	}
 
 	if e.enclosing != nil {
-		return e.enclosing.assign(name, val)
+		return e.enclosing.Assign(name, val)
 	}
 
 	return fmt.Errorf("unefineable variable: %s", name)
 }
 
-func (e *Env) define(key string, val any) {
+func (e *Env) Define(key string, val any) {
 	e.vals[key] = val
 }
 
-func (e *Env) ancestor(dist int) *Env {
+func (e *Env) Ancestor(dist int) *Env {
 	environ := e
 	for j := 0; j < dist; j++ {
 		environ = environ.enclosing
@@ -50,14 +50,31 @@ func (e *Env) ancestor(dist int) *Env {
 	return environ
 }
 
-func (e *Env) getAt(dist int, name string) (any, error) {
-	v, ok := e.ancestor(dist).vals[name]
+func (e *Env) GetAt(dist int, name string) (any, error) {
+	v, ok := e.Ancestor(dist).vals[name]
 	if !ok {
 		return nil, fmt.Errorf("can't get, at: %s, %d", name, dist)
 	}
 	return v, nil
 }
 
-func (e *Env) assignAt(dist int, t Token, val any) {
-	e.ancestor(dist).vals[t.Lexeme] = val
+func (e *Env) AssignAt(dist int, t Token, val any) {
+	e.Ancestor(dist).vals[t.Lexeme] = val
+}
+
+func CopyFrom(src *Env) *Env {
+	if src == nil {
+		return &Env{}
+	}
+	dst := NewEnv()
+	if src.enclosing != nil {
+		dst.enclosing = CopyFrom(src.enclosing)
+	}
+	if len(src.vals) > 0 {
+		dst.vals = make(map[string]any)
+		for k, v := range src.vals {
+			dst.vals[k] = v
+		}
+	}
+	return dst
 }

@@ -20,7 +20,11 @@ var fname = flag.String(
 func main() {
 	fmt.Println("starting...")
 
-	foo := "./sample-state.txt"
+	//foo := "./fun-ret-fun-sample.txt"
+	//foo := "./fun-rec-counter.txt"
+	//foo := "./fun-global-vars.txt"
+	//foo := "./equal-sample.txt"
+	foo := "./fun-sample.txt"
 	fname = &foo
 
 	var fContent []byte
