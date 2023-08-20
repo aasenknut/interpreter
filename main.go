@@ -54,11 +54,7 @@ func main() {
 		log.Fatal("lexer scan: %v", err)
 	}
 	fmt.Println("scanning DONE")
-	//for _, t := range lex.Tokens {
-	//	fmt.Println(t.Lexeme)
-	//}
 
-	//printAst(exampleExpr())
 	fmt.Println("parsing...")
 	stmts := parse(lex.Tokens)
 	interp := NewInterpreter()
@@ -94,27 +90,6 @@ func openFile(fname string) ([]byte, error) {
 	defer f.Close()
 	content, err := io.ReadAll(f)
 	return content, nil
-}
-
-func printAst(e Expr) {
-	fmt.Println("\n[INFO] printing ast...")
-	ap := AstPrinter{}
-	str, err := ap.Print(e)
-	if err != nil {
-		fmt.Printf("\n\n[ERROR] %v\n", err)
-	}
-	fmt.Println(str)
-}
-
-func exampleExpr() Expr {
-	return &BinaryExpr{
-		Left: &UnaryExpr{
-			Operator: Token{Type: Minus, Lexeme: "-"},
-			Right:    &LiteralExpr{Value: 123},
-		},
-		Operator: Token{Type: Star, Lexeme: "*"},
-		Right:    &GroupingExpr{Expr: &LiteralExpr{45.65}},
-	}
 }
 
 func parse(t []Token) []Stmt {
