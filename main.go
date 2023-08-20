@@ -21,7 +21,8 @@ func main() {
 	//foo := "./fun-rec-counter.txt"
 	//foo := "./fun-global-vars.txt"
 	//foo := "./equal-sample.txt"
-	foo := "./fun-sample.txt"
+	//foo := "./fun-sample.txt"
+	foo := "./for-sample.txt"
 	fname = &foo
 
 	fContent, err := openFile(*fname)
