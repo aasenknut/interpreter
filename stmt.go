@@ -6,7 +6,6 @@ type Stmt interface {
 
 type StmtVisitor interface {
 	visitBlockStmt(stmt *BlockStmt) (any, error)
-	visitClassStmt(stmt *ClassStmt) (any, error)
 	visitExprStmt(stmt *ExprStmt) (any, error)
 	visitFunStmt(stmt *FunStmt) (any, error)
 	visitIfStmt(stmt *IfStmt) (any, error)
@@ -22,16 +21,6 @@ type BlockStmt struct {
 
 func (b *BlockStmt) Accept(v StmtVisitor) (any, error) {
 	return v.visitBlockStmt(b)
-}
-
-type ClassStmt struct {
-	Name       Token
-	Superclass VarExpr
-	Methods    []Stmt
-}
-
-func (c *ClassStmt) Accept(v StmtVisitor) (any, error) {
-	return v.visitClassStmt(c)
 }
 
 type ExprStmt struct {

@@ -10,6 +10,7 @@ import (
 type Interpreter struct {
 	env     *Env
 	globals *Env
+	locals  map[*Expr]int
 }
 
 func NewInterpreter() *Interpreter {
@@ -165,14 +166,6 @@ func (i *Interpreter) visitSetExpr(expr *SetExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Interpreter) visitSuperExpr(expr *SuperExpr) (any, error) {
-	return nil, nil
-}
-
-func (i *Interpreter) visitThisExpr(expr *ThisExpr) (any, error) {
-	return nil, nil
-}
-
 func (i *Interpreter) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 	r, err := i.eval(expr.Right)
 	if err != nil {
@@ -202,9 +195,6 @@ func (i *Interpreter) visitBlockStmt(stmt *BlockStmt) (any, error) {
 	return ret, nil
 }
 
-func (i *Interpreter) visitClassStmt(stmt *ClassStmt) (any, error) {
-	return nil, nil
-}
 func (i *Interpreter) visitExprStmt(stmt *ExprStmt) (any, error) {
 	return i.eval(stmt.Expr)
 }
@@ -368,4 +358,8 @@ func (i *Interpreter) executeBlock(stmts []Stmt, e *Env) any {
 	}
 	i.env = CopyFrom(prev)
 	return ret
+}
+
+func (i *Interpreter) resolve(expr *Expr, depth int) {
+	i.locals[expr] = depth
 }
