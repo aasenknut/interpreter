@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 )
-
-const prompt = "\n>> "
 
 var fname = flag.String(
 	"read from file",
@@ -27,19 +24,9 @@ func main() {
 	foo := "./fun-sample.txt"
 	fname = &foo
 
-	var fContent []byte
-
-	var err error
-	if *fname == "" {
-		err = openCLI(os.Stdin, os.Stdout)
-		if err != nil {
-			os.Exit(65)
-		}
-	} else {
-		fContent, err = openFile(*fname)
-		if err != nil {
-			log.Fatal("read file: %v", err)
-		}
+	fContent, err := openFile(*fname)
+	if err != nil {
+		log.Fatal("read file: %v", err)
 	}
 	fmt.Println("\nFile content:\n" + string(fContent))
 	lex := Lexer{
@@ -63,23 +50,6 @@ func main() {
 		fmt.Printf("err - interpreter: %v", err)
 	}
 	fmt.Println("\n\n==[DONE]==")
-}
-
-func openCLI(reader io.Reader, writer io.Writer) error {
-	in := bufio.NewScanner(reader)
-	for {
-		fmt.Fprintf(writer, prompt)
-		fmt.Printf("You wrote: %s", in.Text())
-		data := in.Scan()
-		l := Lexer{}
-		l.Source = in.Text()
-		l.Scan()
-		if !data {
-			return fmt.Errorf("erronoeus data")
-		}
-		fmt.Printf("Tokens: %v", &l.Tokens)
-		//line := in.Text()
-	}
 }
 
 func openFile(fname string) ([]byte, error) {
