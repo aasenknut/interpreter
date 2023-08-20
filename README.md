@@ -1,5 +1,4 @@
-This is essentially a port of the Lox languages interpreter, from Java to Go, 
-found in *Nystrom, B. (2015), Crafting Interpreters*,
+An interpreter written in Go.
 
 Some notes on the features of the language:
 - *Lexer*. Only single byte characters.
@@ -9,4 +8,5 @@ Some notes on the features of the language:
         - *Right*. Unary (`!, -`).
 
 ---
-*Powered by technical debt*.
+This is essentially a port of the Lox languages interpreter, from Java to Go, 
+found in *Nystrom, B. (2015), Crafting Interpreters*,
