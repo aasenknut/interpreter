@@ -1,4 +1,4 @@
-# An interpreter written in Go
+An interpreter written in Go
 
 ### Some notes on the features of the language:
 - *Lexer*. Only single byte characters.
