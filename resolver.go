@@ -38,10 +38,14 @@ func (r *Resolver) declare(name Token) {
 	}
 }
 
-func (r *Resolver) visitBlockStmt(stmt *BlockStmt) {
-
+func (r *Resolver) visitBlockStmt(stmt *BlockStmt) (any, error) {
+	return nil, nil
 }
 
-func (r *Resolver) visitVarStmt(stmt *BlockStmt) {
+func (r *Resolver) visitVarStmt(stmt *BlockStmt) (any, error) {
+	return nil, nil
+}
 
+func (i *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
+	return nil, nil
 }
