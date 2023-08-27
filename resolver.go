@@ -2,6 +2,8 @@ package main
 
 type Resolver struct {
 	Interp *Interpreter
+
+	// behaves like a stack
 	Scopes *Scopes
 }
 
@@ -13,6 +15,11 @@ func (s *Scopes) pop() {
 
 func (s *Scopes) push(scope map[string]bool) {
 	*s = append(*s, scope)
+}
+
+func (s *Scopes) alterTop(name string, v bool) {
+	topScope := (*s)[len(*s)-1]
+	topScope[name] = v
 }
 
 func (r *Resolver) resolve(val any) {
@@ -44,6 +51,14 @@ func (r *Resolver) declare(name Token) {
 	if len(*r.Scopes) == 0 {
 		return
 	}
+	r.Scopes.alterTop(name.Lexeme, false)
+}
+
+func (r *Resolver) define(name Token) {
+	if len(*r.Scopes) == 0 {
+		return
+	}
+	r.Scopes.alterTop(name.Lexeme, true)
 }
 
 func (r *Resolver) visitBlockStmt(stmt *BlockStmt) (any, error) {
@@ -51,6 +66,11 @@ func (r *Resolver) visitBlockStmt(stmt *BlockStmt) (any, error) {
 }
 
 func (r *Resolver) visitVarStmt(stmt *VarStmt) error {
+	r.declare(stmt.Name)
+	if stmt.Init != nil {
+		r.resolve(stmt.Init)
+	}
+	r.define(stmt.Name)
 	return nil
 }
 
