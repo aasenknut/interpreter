@@ -47,27 +47,24 @@ const (
 
 	// Keywords.
 	And   // 22
-	Class // 23
-	Else  // 24
-	False // 25
-	Fun   // 26
-	For   // 27
-	If    // 28
-	Nil   // 29
+	Else  // 23
+	False // 24
+	Fun   // 25
+	For   // 26
+	If    // 27
+	Nil   // 28
 
-	Or     // 30
-	Print  // 31
-	Return // 32
-	Super  // 33
-	This   // 34
-	True   // 35
-	Var    // 36
-	While  // 37
+	Or     // 29
+	Print  // 30
+	Return // 31
+	Super  // 32
+	True   // 33
+	Var    // 34
+	While  // 35
 )
 
 var Keywords = map[string]TokenType{
 	"and":    And,
-	"class":  Class,
 	"else":   Else,
 	"false":  False,
 	"for":    For,
@@ -77,8 +74,6 @@ var Keywords = map[string]TokenType{
 	"or":     Or,
 	"print":  Print,
 	"return": Return,
-	"super":  Super,
-	"this":   This,
 	"true":   True,
 	"var":    Var,
 	"while":  While,

@@ -15,12 +15,20 @@ func (s *Scopes) push(scope map[string]bool) {
 	*s = append(*s, scope)
 }
 
-func (r *Resolver) resolveExpr(e Expr) {
-	e.Accept(r)
-}
+func (r *Resolver) resolve(val any) {
 
-func (r *Resolver) resolveStmt(s Stmt) {
-	s.Accept(r)
+	switch v := val.(type) {
+	case Stmt:
+		v.Accept(r)
+	case Expr:
+		v.Accept(r)
+	case []Stmt:
+		for _, s := range v {
+			r.resolve(s)
+		}
+	default:
+		return
+	}
 }
 
 func (r *Resolver) startScope() {
@@ -42,10 +50,69 @@ func (r *Resolver) visitBlockStmt(stmt *BlockStmt) (any, error) {
 	return nil, nil
 }
 
-func (r *Resolver) visitVarStmt(stmt *BlockStmt) (any, error) {
+func (r *Resolver) visitVarStmt(stmt *VarStmt) error {
+	return nil
+}
+
+func (r *Resolver) visitVarExpr(stmt *VarExpr) (any, error) {
+	return nil, nil
+}
+
+func (r *Resolver) visitWhileStmt(stmt *WhileStmt) (any, error) {
 	return nil, nil
 }
 
 func (i *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
+	return nil, nil
+}
+func (i *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitBinaryExpr(expr *BinaryExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitCallExpr(expr *CallExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitGetExpr(expr *GetExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitSetExpr(expr *SetExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitExprStmt(expr *ExprStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitFunStmt(expr *FunStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitIfStmt(expr *IfStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitPrintStmt(expr *PrintStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitRetStmt(expr *RetStmt) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitLiteralExpr(expr *LiteralExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitLogicalExpr(expr *LogicalExpr) (any, error) {
+	return nil, nil
+}
+
+func (i *Resolver) visitGroupingExpr(expr *GroupingExpr) (any, error) {
 	return nil, nil
 }
