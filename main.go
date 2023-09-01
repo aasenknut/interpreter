@@ -17,12 +17,12 @@ var fname = flag.String(
 func main() {
 	fmt.Println("starting...")
 
-	//foo := "./fun-ret-fun-sample.txt"
-	//foo := "./fun-rec-counter.txt"
-	//foo := "./fun-global-vars.txt"
-	//foo := "./equal-sample.txt"
-	//foo := "./fun-sample.txt"
-	foo := "./for-sample.txt"
+	//foo := "./resources/sample-code/fun-ret-fun-sample.txt"
+	//foo := "./resources/sample-code/fun-rec-counter.txt"
+	//foo := "./resources/sample-code/fun-global-vars.txt"
+	//foo := "./resources/sample-code/equal-sample.txt"
+	//foo := "./resources/sample-code/fun-sample.txt"
+	foo := "./resources/sample-code/for-sample.txt"
 	fname = &foo
 
 	fContent, err := openFile(*fname)
