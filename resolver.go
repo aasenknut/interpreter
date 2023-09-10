@@ -149,26 +149,31 @@ func (r *Resolver) visitFunStmt(stmt *FunStmt) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitIfStmt(expr *IfStmt) (any, error) {
+func (r *Resolver) visitIfStmt(stmt *IfStmt) (any, error) {
+	r.resolve(stmt.Cond)
+	r.resolve(stmt.Then)
+	if stmt.Else != nil {
+		r.resolve(stmt.Else)
+	}
 	return nil, nil
 }
 
-func (i *Resolver) visitPrintStmt(expr *PrintStmt) (any, error) {
+func (r *Resolver) visitPrintStmt(stmt *PrintStmt) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitRetStmt(expr *RetStmt) (any, error) {
+func (r *Resolver) visitRetStmt(stmt *RetStmt) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitLiteralExpr(expr *LiteralExpr) (any, error) {
+func (r *Resolver) visitLiteralExpr(expr *LiteralExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitLogicalExpr(expr *LogicalExpr) (any, error) {
+func (r *Resolver) visitLogicalExpr(expr *LogicalExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitGroupingExpr(expr *GroupingExpr) (any, error) {
+func (r *Resolver) visitGroupingExpr(expr *GroupingExpr) (any, error) {
 	return nil, nil
 }
