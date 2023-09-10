@@ -17,12 +17,7 @@ var fname = flag.String(
 func main() {
 	fmt.Println("starting...")
 
-	//foo := "./resources/sample-code/fun-ret-fun-sample.txt"
-	//foo := "./resources/sample-code/fun-rec-counter.txt"
-	//foo := "./resources/sample-code/fun-global-vars.txt"
-	//foo := "./resources/sample-code/equal-sample.txt"
-	//foo := "./resources/sample-code/fun-sample.txt"
-	foo := "./resources/sample-code/for-sample.txt"
+	foo := "./resources/sample-code/sample-state.txt"
 	fname = &foo
 
 	fContent, err := openFile(*fname)
@@ -60,7 +55,7 @@ func openFile(fname string) ([]byte, error) {
 	}
 	defer f.Close()
 	content, err := io.ReadAll(f)
-	return content, nil
+	return content, err
 }
 
 func parse(t []Token) []Stmt {

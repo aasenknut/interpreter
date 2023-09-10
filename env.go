@@ -58,8 +58,8 @@ func (e *Env) GetAt(dist int, name string) (any, error) {
 	return v, nil
 }
 
-func (e *Env) AssignAt(dist int, t Token, val any) {
-	e.Ancestor(dist).vals[t.Lexeme] = val
+func (e *Env) AssignAt(dist int, name string, val any) {
+	e.Ancestor(dist).vals[name] = val
 }
 
 func CopyFrom(src *Env) *Env {

@@ -48,9 +48,8 @@ func (r *Resolver) resolveLocal(expr Expr, name string) {
 	for j := len(*r.Scopes) - 1; j >= 0; j-- {
 		if _, ok := (*r.Scopes)[j][name]; ok {
 			r.Interp.resolve(&expr, len(*r.Scopes)-1-j)
-
+			return
 		}
-		return
 	}
 }
 
@@ -101,7 +100,7 @@ func (r *Resolver) visitVarStmt(stmt *VarStmt) error {
 }
 
 func (r *Resolver) visitVarExpr(expr *VarExpr) (any, error) {
-	if len(*r.Scopes) > 0 && r.Scopes.peek()[expr.Name] == false {
+	if len(*r.Scopes) > 0 && !r.Scopes.peek()[expr.Name] {
 		return nil, fmt.Errorf("can not read local variable in its init")
 	}
 	r.resolveLocal(expr, expr.Name)
@@ -120,7 +119,7 @@ func (r *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
 	return nil, nil
 }
 func (r *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
-
+	r.resolve(expr.Right)
 	return nil, nil
 }
 

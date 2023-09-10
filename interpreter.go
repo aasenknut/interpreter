@@ -10,7 +10,7 @@ import (
 type Interpreter struct {
 	env     *Env
 	globals *Env
-	locals  map[*Expr]int
+	locals  map[Expr]int
 }
 
 func NewInterpreter() *Interpreter {
@@ -32,7 +32,12 @@ func (i *Interpreter) visitAssignExpr(expr *AssignExpr) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	i.env.Assign(expr.Name, val)
+	dist, ok := i.locals[expr]
+	if !ok {
+		i.env.AssignAt(dist, expr.Name, val)
+	} else {
+		i.globals.Assign(expr.Name, val)
+	}
 	return val, nil
 }
 
@@ -360,6 +365,14 @@ func (i *Interpreter) executeBlock(stmts []Stmt, e *Env) any {
 	return ret
 }
 
-func (i *Interpreter) resolve(expr *Expr, depth int) {
-	i.locals[expr] = depth
+func (i *Interpreter) resolve(e *Expr, depth int) {
+	i.locals[*e] = depth
+}
+
+func (i *Interpreter) lookUpVar(name string, e *Expr) (any, error) {
+	dist := i.locals[*e]
+	if dist != 0 {
+		return i.env.GetAt(dist, name)
+	}
+	return i.globals.Get(name)
 }
