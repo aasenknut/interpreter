@@ -109,6 +109,8 @@ func (r *Resolver) visitVarExpr(expr *VarExpr) (any, error) {
 }
 
 func (r *Resolver) visitWhileStmt(stmt *WhileStmt) (any, error) {
+	r.resolve(stmt.Cond)
+	r.resolve(stmt.Body)
 	return nil, nil
 }
 
