@@ -54,7 +54,7 @@ func (r *Resolver) resolveLocal(expr Expr, name string) {
 	}
 }
 
-func (r *Resolver) resolveFun(stmt FunStmt) {
+func (r *Resolver) resolveFun(stmt *FunStmt) {
 	r.startScope()
 	for _, p := range stmt.Params {
 		r.declare(p)
@@ -138,12 +138,14 @@ func (r *Resolver) visitSetExpr(expr *SetExpr) (any, error) {
 }
 
 func (r *Resolver) visitExprStmt(stmt *ExprStmt) (any, error) {
+	r.resolve(stmt.Expr)
 	return nil, nil
 }
 
 func (r *Resolver) visitFunStmt(stmt *FunStmt) (any, error) {
 	r.declare(stmt.Name)
 	r.define(stmt.Name)
+	r.resolveFun(stmt)
 	return nil, nil
 }
 
