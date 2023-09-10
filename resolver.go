@@ -159,6 +159,7 @@ func (r *Resolver) visitIfStmt(stmt *IfStmt) (any, error) {
 }
 
 func (r *Resolver) visitPrintStmt(stmt *PrintStmt) (any, error) {
+	r.resolve(stmt.Expr)
 	return nil, nil
 }
 
