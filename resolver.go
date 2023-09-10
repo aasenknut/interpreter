@@ -54,6 +54,16 @@ func (r *Resolver) resolveLocal(expr Expr, name string) {
 	}
 }
 
+func (r *Resolver) resolveFun(stmt FunStmt) {
+	r.startScope()
+	for _, p := range stmt.Params {
+		r.declare(p)
+		r.define(p)
+	}
+	r.resolve(stmt.Body)
+	r.endScope()
+}
+
 func (r *Resolver) startScope() {
 	s := make(map[string]bool)
 	r.Scopes.push(s)
@@ -102,34 +112,38 @@ func (r *Resolver) visitWhileStmt(stmt *WhileStmt) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
+func (r *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
+	r.resolve(expr.Value)
+	r.resolveLocal(expr, expr.Name)
 	return nil, nil
 }
-func (i *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
-	return nil, nil
-}
-
-func (i *Resolver) visitBinaryExpr(expr *BinaryExpr) (any, error) {
-	return nil, nil
-}
-
-func (i *Resolver) visitCallExpr(expr *CallExpr) (any, error) {
+func (r *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitGetExpr(expr *GetExpr) (any, error) {
+func (r *Resolver) visitBinaryExpr(expr *BinaryExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitSetExpr(expr *SetExpr) (any, error) {
+func (r *Resolver) visitCallExpr(expr *CallExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitExprStmt(expr *ExprStmt) (any, error) {
+func (r *Resolver) visitGetExpr(expr *GetExpr) (any, error) {
 	return nil, nil
 }
 
-func (i *Resolver) visitFunStmt(expr *FunStmt) (any, error) {
+func (r *Resolver) visitSetExpr(expr *SetExpr) (any, error) {
+	return nil, nil
+}
+
+func (r *Resolver) visitExprStmt(stmt *ExprStmt) (any, error) {
+	return nil, nil
+}
+
+func (r *Resolver) visitFunStmt(stmt *FunStmt) (any, error) {
+	r.declare(stmt.Name)
+	r.define(stmt.Name)
 	return nil, nil
 }
 
