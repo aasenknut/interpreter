@@ -120,6 +120,7 @@ func (r *Resolver) visitAssignExpr(expr *AssignExpr) (any, error) {
 	return nil, nil
 }
 func (r *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
+
 	return nil, nil
 }
 
@@ -130,6 +131,10 @@ func (r *Resolver) visitBinaryExpr(expr *BinaryExpr) (any, error) {
 }
 
 func (r *Resolver) visitCallExpr(expr *CallExpr) (any, error) {
+	r.resolve(expr.Callee)
+	for _, arg := range expr.Args {
+		r.resolve(arg)
+	}
 	return nil, nil
 }
 
@@ -179,9 +184,11 @@ func (r *Resolver) visitLiteralExpr(expr *LiteralExpr) (any, error) {
 }
 
 func (r *Resolver) visitLogicalExpr(expr *LogicalExpr) (any, error) {
+	r.resolve(expr.Right)
 	return nil, nil
 }
 
 func (r *Resolver) visitGroupingExpr(expr *GroupingExpr) (any, error) {
+	r.resolve(expr.Expr)
 	return nil, nil
 }
