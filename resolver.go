@@ -124,6 +124,8 @@ func (r *Resolver) visitUnaryExpr(expr *UnaryExpr) (any, error) {
 }
 
 func (r *Resolver) visitBinaryExpr(expr *BinaryExpr) (any, error) {
+	r.resolve(expr.Left)
+	r.resolve(expr.Right)
 	return nil, nil
 }
 
