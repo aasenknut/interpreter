@@ -33,11 +33,11 @@ func main() {
 		start:   0,
 		current: 0,
 	}
-	fmt.Println("scanning...")
+	slog.Info("scanning...")
 	if err = lex.Scan(); err != nil {
-		log.Fatal("lexer scan: %v", err)
+		log.Fatalf("lexer scan: %v", err)
 	}
-	fmt.Println("scanning DONE")
+	slog.Info("scanning complete")
 
 	stmts := parse(lex.Tokens)
 	interp := NewInterpreter()
