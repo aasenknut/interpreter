@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"os"
 )
 
@@ -38,14 +39,12 @@ func main() {
 	}
 	fmt.Println("scanning DONE")
 
-	fmt.Println("parsing...")
 	stmts := parse(lex.Tokens)
 	interp := NewInterpreter()
-	fmt.Println("interpreting...")
 	if err := interp.interpret(stmts); err != nil {
-		fmt.Printf("err - interpreter: %v", err)
+		slog.Error("interpreter", "err", err)
 	}
-	fmt.Println("\n\n==[DONE]==")
+	slog.Info("complete")
 }
 
 func openFile(fname string) ([]byte, error) {
@@ -62,7 +61,7 @@ func parse(t []Token) []Stmt {
 	p := NewParser(t)
 	s, err := p.Parse()
 	if err != nil {
-		fmt.Println("\n[ERROR] parse: %v", err)
+		slog.Error("parse", "err", err)
 	}
 	return s
 }
