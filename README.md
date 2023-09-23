@@ -1,11 +1,4 @@
-An interpreter written in Go.
-
-### Some notes on the features of the language:
-- *Lexer*. Only single byte characters.
-- *Parser*. Recursive decent.
-    - Associates:
-        - *Left*. Equality (`==, !=`), comparison (`>, >=, <, <=`), term (`+, -`), factor (`*, /`).
-        - *Right*. Unary (`!, -`).
+<sup>An interpreter written in Go.</sup>
 
 ### Examples.
 Look in `./resources/sample-code` for sample code.
